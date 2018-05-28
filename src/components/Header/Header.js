@@ -1,40 +1,48 @@
 import React, {Component} from 'react';
-import './Header.css'
+// import './Header.css'
 
 class Header extends Component {
   constructor(props) {
     super(props)
     this.state = {isActive: false}
 
-    // I've seen the following line in a few tutorials, but the official
-    // React docs seem to say that this is unnecessary. Try commenting it out
+    // Without the following line, `this` would be undefined in the handleClick method
     this.handleClick = this.handleClick.bind(this)
   }
 
+  handleClick() {
+    this.setState(prevState => ({
+      isActive: !prevState.isActive
+    }))
+  }
+
   render() {
+    let menuActive = this.state.isActive ? 'is-active' : ''
+
     return (
-      <div className="navbar has-shadow is-fixed-top is-dark">
+      <div className="navbar is-fixed-top is-dark">
       <div className="navbar-brand">
         <a className="navbar-item">MovieDemo</a>
 
-        <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false">
+        <a className={'navbar-burger ' + menuActive} onClick={this.handleClick}>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </a>
       </div>
 
-      <div className="navbar-menu">
+      <div className={'navbar-menu ' + menuActive}>
         <div className="navbar-end">
-          <div className="navbar-item">
-            About the site
-          </div>
-          <div className="navbar-item">
-            About me
-          </div>
-          <div className="navbar-item">
-            Letter to a friend
-          </div>
+          <a target="_blank" rel="noopener noreferrer" href="https://jal90.github.io" className="navbar-item">
+            Portfolio
+          </a>
+          <a target="_blank" rel="noopener noreferrer" href="https://linkedin.com/in/jal90" className="navbar-item">
+            Linkedin
+          </a>
+          {/* TODO: maybe make this route to a form that can send an email from the website */}
+          <a target="_blank" rel="noopener noreferrer" href="mailto:adamslukowsky@gmail.com" className="navbar-item">
+            Email
+          </a>
         </div>
       </div>
     </div>
