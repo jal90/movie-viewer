@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import './Movies.sass'
+import ReactModal from 'react-modal'
+import './Movies.css'
 import Movie from '../Movie/Movie'
 
 class Movies extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isModalOn: false,
+      modalIsOpen: false,
       movies: [
         {id: 1, src: 'https://www.youtube.com/embed/LI7Wcl5y5Qs', title: 'Aeris\'s Theme', description: 'A violin & piano cover by Taylor Davis & Lara de Wit', thumbnail: 'https://img.youtube.com/vi/LI7Wcl5y5Qs/0.jpg'},
         {id: 2, src: 'https://www.youtube.com/embed/6L0TnBLugTQ', title: 'Wind Scene (600 A.D.)', description: 'A guitar cover by Sam Griffin', thumbnail: 'https://img.youtube.com/vi/6L0TnBLugTQ/0.jpg'},
@@ -18,35 +19,44 @@ class Movies extends Component {
       currentMovieSrc: null
     }
 
-    this.handleClick = this.handleClick.bind(this)
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   }
 
-  handleClick(title, description, src) {
-    this.setState(prevState => ({
-      isModalOn: !prevState.isModalOn,
+  openModal(title, description, src) {
+    this.setState({
+      modalIsOpen: true,
       currentMovieTitle: title,
       currentMovieDescription: description,
       currentMovieSrc: src
-    }),
-      // A callback function that performs once setState completes
-      // ensures the video stops when the modal is closed
-      this.stopPlayer
-    )
+    });
   }
 
-  // Modifies iframe document's body to stop the video
-  stopPlayer() {
-    	document.getElementById("moviePlayer")
-        .contentWindow
-        .postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*')
-      }
+  closeModal() {
+    this.setState({modalIsOpen: false});
+  }
 
   render() {
-    let modalActive = this.state.isModalOn
-      ? 'is-active'
-      : ''
-
-    let modalFadeOut = this.state.isModalOn ? '' : 'animated fadeOutRight'
+    const modalStyles = {
+      overlay: {
+     position: 'fixed',
+     top: 0,
+     left: 0,
+     right: 0,
+     bottom: 0,
+     backgroundColor: 'rgba(0, 0, 0, 0)'
+   },
+      content : {
+      // top                   : '50%',
+      // left                  : '50%',
+      // right                 : '0',
+      // bottom                : 'auto',
+      // width                 : '50%',
+      // marginRight           : '-50%',
+      transform             : 'translate(45%, 4%)',
+      // backgroundColor: 'rgba(, 0, 255, 0.75)'
+      }
+    }
 
     return (<div>
       <section className="section">
@@ -59,7 +69,8 @@ class Movies extends Component {
                   description={movie.description}
                   thumbnail={movie.thumbnail}
                   src={movie.src}
-                  onClick={() => this.handleClick(movie.title, movie.description, movie.src)} />
+                  onClick={() => this.openModal(movie.title, movie.description, movie.src)}
+                />
               )
             })}
 
@@ -67,21 +78,25 @@ class Movies extends Component {
         </div>
       </section>
 
-      <div className={'modal ' + modalActive}>
-        <div onClick={this.handleClick} className={'modal-background ' + modalFadeOut}></div>
-        <div className="modal-card animated fadeInRight">
-          <header className="modal-card-head">
-            <p className="modal-card-title">{this.state.isModalOn ? this.state.currentMovieTitle : null}</p>
-            <button onClick={this.handleClick} className="delete"></button>
-          </header>
+      <ReactModal isOpen={this.state.modalIsOpen}
+                  onRequestClose={this.closeModal}
+                  style={modalStyles}
+                  closeTimeoutMS={500}
+                  >
 
-          <div className="modal-card-body">
+        <div className="card">
+          <div className="card-header">
+            <div className="card-header-title">
+              <button onClick={this.closeModal}>X</button>
+              {this.state.currentMovieTitle}
+            </div>
+          </div>
+          <div className="card-content">
             <iframe id="moviePlayer" title={this.state.currentMovieTitle} width="560" height="315" src={this.state.currentMovieSrc} frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>
-            <p>{this.state.isModalOn ? this.state.currentMovieDescription : null}</p>
+            <p>{this.state.currentMovieDescription}</p>
           </div>
         </div>
-      </div>
-
+      </ReactModal>
     </div>);
   }
 }
