@@ -23,6 +23,8 @@ class Header extends Component {
       <div className="navbar is-fixed-top is-dark">
       <div className="navbar-brand">
         <a className="navbar-item">MovieDemo</a>
+        {/* TODO: size and place this icon */}
+        {/* <i className="fa fa-film"></i> */}
 
         <a className={'navbar-burger ' + menuActive} onClick={this.handleClick}>
           <span aria-hidden="true"></span>
